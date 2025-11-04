@@ -4,5 +4,5 @@ export type T_Portfolio = {
     year: number;
     role: string;
     description: string;
-    image?: string;
+    imageUrl?: string;
 }

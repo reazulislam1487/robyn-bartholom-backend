@@ -1,15 +1,13 @@
-import { Types } from "mongoose"
+import { Types } from "mongoose";
 
 export type TUser = {
-    name: string,
-    photo?: string,
-    address?: {
-        location?: string,
-        city?: string,
-        state?: string,
-        postCode?: string,
-        country?: string,
-        timeZone?: string
-    },
-    accountId?: Types.ObjectId
-}
+  firstName: string;
+  lastName: string;
+  email: string;
+  password?: string;
+  imageUrl?: string;
+  phone?: string;
+  title?: string;
+  bio?: string;
+  location?: string;
+};
