@@ -86,11 +86,15 @@ export const get_my_profile_from_db = async (email: string) => {
   //   accountId: isExistAccount._id,
   // }).exec();
 
-  // 3️⃣ Remove password before returning
-  isExistAccount.password = "";
+  // 4. remove password before returning
+  const accountObj = isExistAccount.toObject
+    ? isExistAccount.toObject()
+    : { ...isExistAccount };
+  delete (accountObj as any).password;
+  
   // 4️⃣ Return object similar to your pattern
   return {
-    profile: isExistAccount,
+    profile: accountObj,
   };
 };
 export const auth_services = {
