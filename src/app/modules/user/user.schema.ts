@@ -7,7 +7,6 @@ const user_schema = new Schema<TUser>({
   email: { type: String, required: true, unique: true },
   imageUrl: { type: String, required: false },
   location: { type: String },
-
   phone: { type: String, required: false },
   password: { type: String, required: true },
 });

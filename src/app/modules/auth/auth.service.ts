@@ -1,10 +1,6 @@
-import { AppError } from "../../utils/app_error";
 import { TLoginPayload } from "./auth.interface";
-import { Account_Model } from "./auth.schema";
-import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import { User_Model } from "../user/user.schema";
-import { JwtPayload, Secret } from "jsonwebtoken";
 import { isAccountExist } from "../../utils/isAccountExist";
 
 export const login_user_from_db = async (payload: TLoginPayload) => {
@@ -40,35 +36,6 @@ export const login_user_from_db = async (payload: TLoginPayload) => {
 };
 
 // change password
-const change_password_from_db2 = async (
-  user: JwtPayload,
-  payload: {
-    oldPassword: string;
-    newPassword: string;
-    confirmNewPassword: string;
-  }
-) => {
-  const isExistAccount = await isAccountExist(user?.email);
-
-  const isCorrectPassword: boolean = await bcrypt.compare(
-    payload.oldPassword,
-    isExistAccount.password
-  );
-
-  if (!isCorrectPassword) {
-    throw new AppError("Old password is incorrect", httpStatus.UNAUTHORIZED);
-  }
-
-  const hashedPassword: string = await bcrypt.hash(payload.newPassword, 10);
-  await Account_Model.findOneAndUpdate(
-    { email: isExistAccount.email },
-    {
-      password: hashedPassword,
-      lastPasswordChange: Date(),
-    }
-  );
-  return "Password changed successful.";
-};
 export const change_password_from_db = async (payload: {
   email: string;
   oldPassword: string;
@@ -106,16 +73,24 @@ export const change_password_from_db = async (payload: {
   };
 };
 
-// get profile data
-const get_my_profile_from_db = async (email: string) => {
+export const get_my_profile_from_db = async (email: string) => {
+  // 1️⃣ Check if account exists
   const isExistAccount = await isAccountExist(email);
-  const accountProfile = await User_Model.findOne({
-    accountId: isExistAccount._id,
-  });
+
+  if (!isExistAccount) {
+    throw new Error("Account not found");
+  }
+
+  //? 2️⃣ Fetch profile linked to this account (Not Applicable for Only one User Collection)
+  // const accountProfile = await User_Model.findOne({
+  //   accountId: isExistAccount._id,
+  // }).exec();
+
+  // 3️⃣ Remove password before returning
   isExistAccount.password = "";
+  // 4️⃣ Return object similar to your pattern
   return {
-    account: isExistAccount,
-    profile: accountProfile,
+    profile: isExistAccount,
   };
 };
 export const auth_services = {

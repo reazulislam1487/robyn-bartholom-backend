@@ -5,7 +5,7 @@ import { reviews_service } from "./reviews.service";
 
 const create_new_reviews = catchAsync(async (req, res) => {
   const result = await reviews_service.create_new_reviews_into_db(req.body);
-  console.log("New reviews created:", result);
+  // console.log("New reviews created:", result);
   manageResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -15,7 +15,7 @@ const create_new_reviews = catchAsync(async (req, res) => {
 });
 const get_all_reviews = catchAsync(async (req, res) => {
   const result = await reviews_service.get_all_reviews_from_db();
-  console.log("Get all Reviews:", result);
+  // console.log("Get all Reviews:", result);
   manageResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
