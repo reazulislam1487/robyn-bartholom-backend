@@ -54,10 +54,17 @@ export const change_password_from_db = async (payload: {
   if (!isMatch) {
     throw new Error("Old password is incorrect");
   }
-
   // 3. confirm new passwords match
   if (payload.newPassword !== payload.confirmNewPassword) {
     throw new Error("New passwords do not match");
+  }
+
+  // 4. Old password and new password cannot be the same
+  if (
+    payload.oldPassword === payload.newPassword ||
+    payload.oldPassword === payload.confirmNewPassword
+  ) {
+    throw new Error("Old password and new password cannot be the same");
   }
 
   // 4. hash the new password
@@ -81,17 +88,12 @@ export const get_my_profile_from_db = async (email: string) => {
     throw new Error("Account not found");
   }
 
-  //? 2️⃣ Fetch profile linked to this account (Not Applicable for Only one User Collection)
-  // const accountProfile = await User_Model.findOne({
-  //   accountId: isExistAccount._id,
-  // }).exec();
-
   // 4. remove password before returning
   const accountObj = isExistAccount.toObject
     ? isExistAccount.toObject()
     : { ...isExistAccount };
   delete (accountObj as any).password;
-  
+
   // 4️⃣ Return object similar to your pattern
   return {
     profile: accountObj,

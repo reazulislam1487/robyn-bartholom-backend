@@ -11,7 +11,11 @@ authRoute.post(
   auth_controllers.login_user
 );
 
-authRoute.get("/me", auth_controllers.get_my_profile);
+authRoute.get(
+  "/me",
+  RequestValidator(auth_validation.getProfile),
+  auth_controllers.get_my_profile
+);
 
 // change password route
 authRoute.post(

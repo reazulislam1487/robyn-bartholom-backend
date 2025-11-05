@@ -9,7 +9,7 @@ const update_profile_into_db = async (req: Request) => {
     const uploadedImage = await uploadCloud(req.file);
     req.body.photo = uploadedImage?.secure_url;
   }
-
+  console.log(req);
   const isExistUser = await Account_Model.findOne({
     email: req?.user?.email,
   }).lean();
