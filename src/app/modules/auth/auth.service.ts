@@ -12,29 +12,35 @@ import { JwtPayload, Secret } from "jsonwebtoken";
 import sendMail from "../../utils/mail_sender";
 import { isAccountExist } from "../../utils/isAccountExist";
 
-// login user
-const login_user_from_db = async (payload: TLoginPayload) => {
-  // find user by email
-  const user = await User_Model.findOne({ email: payload.email });
+export const login_user_from_db = async (payload: TLoginPayload) => {
+  // 1. find user by email
+  const user = await User_Model.findOne({
+    email: payload.email,
+  }).exec();
 
+  // 2. if no user -> generic error
   if (!user) {
-    throw new Error("Invalid email");
-  }
-  // compare plain passwords (no bcrypt)
-  console.log(user);
-  console.log(user.firstName);
-  console.log(user.password);
-
-  if (String(payload.password).trim() !== String(user.password).trim()) {
-    throw new Error("Invalid password");
+    throw new Error("Invalid email or password");
   }
 
-  // if both match, return success response
+  // 3. compare hashed password using bcrypt
+  const isMatch = await bcrypt.compare(
+    String(payload.password),
+    String(user.password)
+  );
+
+  if (!isMatch) {
+    throw new Error("Invalid email or password");
+  }
+
+  // 4. remove password before returning
+  const userObj = user.toObject ? user.toObject() : { ...user };
+  delete (userObj as any).password;
+
+  // 5. success response
   return {
     message: "Login successful ✅",
-    user: {
-      user,
-    },
+    user: userObj,
   };
 };
 
